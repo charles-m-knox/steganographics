@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steganography</title>
+    <link rel="stylesheet" href="/assets/semantic-2.9.2.min.css">
+    <link rel="stylesheet" href="/assets/styles.css">
+    <script src="/assets/alpinejs-3.12.0.min.js" defer></script>
+</head>
+
+<body>
+    <div x-data="{ open: false }" class="ui container-fluid">
+        <!-- Header -->
+        <div class="ui inverted blue stackable menu no-border-radius mb-0">
+            <div class="item">
+                <h2 class="ui header white-text">
+                    <i class="linux icon white-text"></i>
+                    <div class="content">cmcode.dev</div>
+                </h2>
+            </div>
+            <div class="right menu">
+                <a class="item" href="#about">Portfolio</a>
+            </div>
+        </div>
+    </div>
+    <div class="ui text container-fluid mb-5">
+        <div class="ui placeholder segment no-border-radius">
+            <div class="ui icon header">
+                <i class="linux icon"></i>
+                Steganographics
+            </div>
+            <div class="ui text container">
+                <p>
+                    This tool provides a simple interface to hide and extract text within images using steganography.
+                    Steganography is the practice of hiding secret information within an ordinary, non-secret medium (in
+                    this case, an image) to ensure the information remains concealed and undetected.
+                </p>
+                <details class="mb-3">
+                    <summary style="cursor: pointer;">Technical details</summary>
+                    <p>
+                        We've implemented a basic Least Significant Bit (LSB) steganography algorithm. The LSB algorithm
+                        hides the secret text by replacing the least significant bits of the red channel in the image's
+                        pixels with the bits of the secret message. The changes are minimal and imperceptible to the
+                        human eye, allowing the text to remain hidden.
+                    </p>
+                </details>
+                <details class="mb-3">
+                    <summary style="cursor: pointer;">Three use cases</summary>
+                    <ul>
+                        <li><strong>Use case 1:</strong> Secure communication - Hide sensitive information in seemingly
+                            harmless images to share it without drawing suspicion.</li>
+                        <li><strong>Use case 2:</strong> Digital watermarking - Embed copyright information or creator
+                            details within an image to prove ownership and protect intellectual property.</li>
+                        <li><strong>Use case 3:</strong> Metadata storage - Store additional information about an image,
+                            such as geolocation, camera settings, or other metadata, directly within the image file
+                            itself.</li>
+                    </ul>
+                </details>
+            </div>
+        </div>
+    </div>
+    <div class="ui container">
+        <h2 class="ui header">Encode text into an image</h2>
+        <p>
+            Add a message below, then choose an image to encode with your message. The image will be shown below, where
+            it can then be saved to your device.
+        </p>
+        <form id="hide-form" class="ui form">
+            <div class="field">
+                <label for="message">Message:</label>
+                <input type="text" id="message" name="message" required>
+            </div>
+            <div class="field">
+                <label for="image">Image (PNG only):</label>
+                <input type="file" id="image" name="image" accept="image/png" required>
+            </div>
+            <button type="submit" class="ui primary button">Encode Image</button>
+        </form>
+
+        <h3 class="ui header">Result:</h3>
+        <div id="result" class="ui segment"></div>
+
+        <h2 class="ui header">Extract text from image</h2>
+        <form id="extract-form" class="ui form">
+            <div class="field">
+                <label for="image2">Image (PNG):</label>
+                <input type="file" id="image2" name="image2" accept="image/png" required>
+            </div>
+            <button type="submit" class="ui primary button">Extract Message</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('hide-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = document.getElementById('message').value;
+            const image = document.getElementById('image').files[0];
+
+            if (!message || !image) return;
+
+            const imageData = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.readAsDataURL(image);
+            });
+
+            const response = await fetch('/api/hide', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ msg: message, png: imageData }),
+            });
+
+            const blob = await response.blob();
+            const imageUrl = URL.createObjectURL(blob);
+
+            document.getElementById('result').innerHTML = `<img src="${imageUrl}" alt="Modified image">`;
+        });
+
+        document.getElementById('extract-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const image = document.getElementById('image2').files[0];
+
+            if (!image) return;
+
+            const imageData = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.readAsDataURL(image);
+            });
+
+            const response = await fetch('/api/extract', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ png: imageData }),
+            });
+
+            const jsonResponse = await response.json();
+            document.getElementById('result').innerText = jsonResponse.msg;
+        });
+    </script>
+</body>
+
+</html>

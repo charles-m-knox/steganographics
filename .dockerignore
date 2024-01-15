@@ -1,0 +1,8 @@
+.gitignore
+*.go.old
+*.jpg
+*.png
+index.html
+Makefile
+steganographics
+Dockerfile

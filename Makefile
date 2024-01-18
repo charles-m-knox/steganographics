@@ -1,7 +1,7 @@
 .PHONY=build
 
 BUILDDIR=build
-VER=0.1.1
+VER=0.1.2
 BIN=$(BUILDDIR)/steganographics-v$(VER)
 REPO=gitea.cmcode.dev/cmcode/steganographics
 

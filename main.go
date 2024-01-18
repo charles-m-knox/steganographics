@@ -6,6 +6,8 @@ import (
 	"image/png"
 	"log"
 	"os"
+
+	"gitea.cmcode.dev/cmcode/steganographics/secrets"
 )
 
 var (
@@ -35,14 +37,14 @@ func main() {
 	if flagAddr != "" {
 		server(flagAddr)
 	} else if inputFile != "" && outputFile != "" && hiddenText != "" {
-		err := HideTextInImageFile(inputFile, []byte(hiddenText), outputFile)
+		err := secrets.HideTextInImageFile(inputFile, []byte(hiddenText), outputFile)
 		if err != nil {
 			log.Printf("Error: %s\n", err)
 		}
 
 		log.Println("successfully hid text in image, exiting now")
 	} else if inputFile != "" && outputFile == "" && hiddenText == "" {
-		extractedText, err := ExtractTextFromImageFile(inputFile)
+		extractedText, err := secrets.ExtractTextFromImageFile(inputFile)
 		if err != nil {
 			log.Printf("failed to extract text from file %v: %v", inputFile, err.Error())
 		}
@@ -54,7 +56,7 @@ func main() {
 			log.Fatalf("failed to read img from stdin: %v", err.Error())
 		}
 
-		output, err := HideTextInImage(img, []byte(hiddenText))
+		output, err := secrets.HideTextInImage(img, []byte(hiddenText))
 		if err != nil {
 			log.Fatalf("failed to read img from stdin: %v", err.Error())
 		}
@@ -69,6 +71,6 @@ func main() {
 			log.Fatalf("failed to read img from stdin: %v", err.Error())
 		}
 
-		os.Stdout.Write(ExtractTextFromImage(img))
+		os.Stdout.Write(secrets.ExtractTextFromImage(img))
 	}
 }

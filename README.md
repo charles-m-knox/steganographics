@@ -19,10 +19,10 @@ This Go library has no dependencies aside from the standard library, and will wo
 But first, you must install it like this:
 
 ```bash
-GOPROXY=https://gitea.cmcode.dev/api/packages/cmcode/go go install gitea.cmcode.dev/cmcode/steganographics@v0.1.1
+GOSUMDB=off GOPROXY=https://gitea.cmcode.dev/api/packages/cmcode/go go get -v gitea.cmcode.dev/cmcode/steganographics/secrets@latest
 ```
 
-If you do not do this, you will not be able to use the library.
+> *If you do not do this, you will not be able to use the library - Go's built-in package resolver will attempt to use `main.go` and will fail.*
 
 Usage:
 
@@ -30,7 +30,7 @@ Usage:
 package main
 
 import (
-    s "gitea.cmcode.dev/cmcode/steganographics"
+    s "gitea.cmcode.dev/cmcode/steganographics/secrets"
 )
 
 func getTextFromStdin() {
@@ -62,7 +62,15 @@ func writeTextToImageFromStdin(hiddenText string) {
 
 ### Command line tool
 
-`steganographics` supports piping from `stdin` and to `stdout`:
+If you want to use Go's `go install` to install steganographics, you can do it by appending `-cli` to the version:
+
+```bash
+GOSUMDB=off GOPROXY=https://gitea.cmcode.dev/api/packages/cmcode/go go install gitea.cmcode.dev/cmcode/steganographics@v0.1.1-cli
+```
+
+> *Note: If you forget to add the suffix `-cli`, it will instead install the library-only version.*
+
+Once installed, `steganographics` supports piping from `stdin` and to `stdout`:
 
 ```bash
 # writes secret text to an image, and then immediately echoes the secret

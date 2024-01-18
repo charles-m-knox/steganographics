@@ -1,4 +1,4 @@
-package main
+package secrets
 
 import (
 	"bytes"
@@ -108,6 +108,8 @@ func saveImage(filename string, img image.Image) error {
 	return nil
 }
 
+// ExtractTextFromImage attempts to read a sequence of null-terminated bytes
+// from the provide image.
 func ExtractTextFromImage(img image.Image) []byte {
 	bounds := img.Bounds()
 	width, height := bounds.Max.X, bounds.Max.Y
@@ -141,6 +143,8 @@ func ExtractTextFromImage(img image.Image) []byte {
 	return data.Bytes()
 }
 
+// ExtractTextFromImage attempts to read a sequence of null-terminated bytes
+// from the provide image file.
 func ExtractTextFromImageFile(inputFile string) (string, error) {
 	file, err := os.Open(inputFile)
 	if err != nil {

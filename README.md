@@ -16,6 +16,16 @@ This program has three modes of operation:
 
 This Go library has no dependencies aside from the standard library, and will work with `CGO_ENABLED=0`.
 
+But first, you must install it like this:
+
+```bash
+GOPROXY=https://gitea.cmcode.dev/api/packages/cmcode/go go install gitea.cmcode.dev/cmcode/steganographics@v0.1.1
+```
+
+If you do not do this, you will not be able to use the library.
+
+Usage:
+
 ```go
 package main
 

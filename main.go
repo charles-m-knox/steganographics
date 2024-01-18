@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"image"
 	"image/png"
 	"log"
@@ -11,12 +12,15 @@ import (
 )
 
 var (
-	inputFile  string
-	outputFile string
-	hiddenText string
-	flagAddr   string
-	flagCert   string
-	flagKey    string
+	inputFile   string
+	outputFile  string
+	hiddenText  string
+	flagAddr    string
+	flagCert    string
+	flagKey     string
+	flagVersion bool
+
+	version string // to be modified at compile time
 )
 
 func parseFlags() {
@@ -24,15 +28,26 @@ func parseFlags() {
 	flag.StringVar(&flagCert, "cert", "", "the cert.pem file to use for TLS - leave blank for no TLS")
 	flag.StringVar(&flagKey, "key", "", "the key.pem file to use for TLS - leave blank for no TLS")
 
-	flag.StringVar(&inputFile, "input", "", "Input PNG file to encode the secret into")
-	flag.StringVar(&outputFile, "output", "", "Output file that will contain the encoded secret")
-	flag.StringVar(&hiddenText, "secret", "", "The message to encode into the input file")
+	flag.StringVar(&inputFile, "input", "", "input PNG file to encode the secret into")
+	flag.StringVar(&outputFile, "output", "", "output file that will contain the encoded secret")
+	flag.StringVar(&hiddenText, "secret", "", "the message to encode into the input file")
+
+	const versionHelp = "print version information and exit"
+
+	flag.BoolVar(&flagVersion, "version", false, versionHelp)
+	flag.BoolVar(&flagVersion, "v", false, versionHelp)
 
 	flag.Parse()
 }
 
 func main() {
 	parseFlags()
+
+	if flagVersion {
+		os.Stdout.Write([]byte(fmt.Sprintf("%v\n", version)))
+
+		return
+	}
 
 	if flagAddr != "" {
 		server(flagAddr)

@@ -1,18 +1,18 @@
 .PHONY=build
 
 BUILDDIR=build
-VER=0.1.2
+VER=0.1.3
 BIN=$(BUILDDIR)/steganographics-v$(VER)
 REPO=gitea.cmcode.dev/cmcode/steganographics
 
 build-dev:
-	CGO_ENABLED=0 go build -v
+	CGO_ENABLED=0 go build -ldflags="-X main.version=v$(VER)-dev" -v
 
 mkbuilddir:
 	mkdir -p $(BUILDDIR)
 
 build-prod: mkbuilddir
-	CGO_ENABLED=0 go build -v -o $(BIN) -ldflags="-w -s -buildid=" -trimpath
+	CGO_ENABLED=0 go build -v -o $(BIN) -ldflags="-X main.version=v$(VER) -w -s -buildid=" -trimpath
 
 test:
 	go test -test.v -coverprofile=testcov.out ./... && \
@@ -29,27 +29,27 @@ compress-prod: mkbuilddir
 	upx --best -o ./$(BIN)-compressed $(BIN)
 
 build-mac-arm64: mkbuilddir
-	CGO_ENABLED=0 GOARCH=arm64 GOOS=darwin go build -v -o $(BIN)-darwin-arm64 -ldflags="-w -s -buildid=" -trimpath
+	CGO_ENABLED=0 GOARCH=arm64 GOOS=darwin go build -v -o $(BIN)-darwin-arm64 -ldflags="-X main.version=v$(VER) -w -s -buildid=" -trimpath
 	rm -f $(BIN)-darwin-arm64.xz
 	xz -9 -e -T 12 -vv $(BIN)-darwin-arm64
 
 build-mac-amd64: mkbuilddir
-	CGO_ENABLED=0 GOARCH=amd64 GOOS=darwin go build -v -o $(BIN)-darwin-amd64 -ldflags="-w -s -buildid=" -trimpath
+	CGO_ENABLED=0 GOARCH=amd64 GOOS=darwin go build -v -o $(BIN)-darwin-amd64 -ldflags="-X main.version=v$(VER) -w -s -buildid=" -trimpath
 	rm -f $(BIN)-darwin-amd64.xz
 	xz -9 -e -T 12 -vv $(BIN)-darwin-amd64
 
 build-win-amd64: mkbuilddir
-	CGO_ENABLED=0 GOARCH=amd64 GOOS=windows go build -v -o $(BIN)-win-amd64-uncompressed -ldflags="-w -s -buildid=" -trimpath
+	CGO_ENABLED=0 GOARCH=amd64 GOOS=windows go build -v -o $(BIN)-win-amd64-uncompressed -ldflags="-X main.version=v$(VER) -w -s -buildid=" -trimpath
 	rm -f $(BIN)-win-amd64
 	upx --best -o ./$(BIN)-win-amd64 $(BIN)-win-amd64-uncompressed
 
 build-linux-arm64: mkbuilddir
-	CGO_ENABLED=0 GOARCH=arm64 GOOS=linux go build -v -o $(BIN)-linux-arm64-uncompressed -ldflags="-w -s -buildid=" -trimpath
+	CGO_ENABLED=0 GOARCH=arm64 GOOS=linux go build -v -o $(BIN)-linux-arm64-uncompressed -ldflags="-X main.version=v$(VER) -w -s -buildid=" -trimpath
 	rm -f $(BIN)-linux-arm64
 	upx --best -o ./$(BIN)-linux-arm64 $(BIN)-linux-arm64-uncompressed
 
 build-linux-amd64: mkbuilddir
-	CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -v -o $(BIN)-linux-amd64-uncompressed -ldflags="-w -s -buildid=" -trimpath
+	CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -v -o $(BIN)-linux-amd64-uncompressed -ldflags="-X main.version=v$(VER) -w -s -buildid=" -trimpath
 	rm -f $(BIN)-linux-amd64
 	upx --best -o ./$(BIN)-linux-amd64 $(BIN)-linux-amd64-uncompressed
 

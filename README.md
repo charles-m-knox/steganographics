@@ -16,13 +16,11 @@ This program has three modes of operation:
 
 This Go library has no dependencies aside from the standard library, and will work with `CGO_ENABLED=0`.
 
-But first, you must install it like this:
+You **must** install it like this:
 
 ```bash
-GOSUMDB=off GOPROXY=https://gitea.cmcode.dev/api/packages/cmcode/go go get -v gitea.cmcode.dev/cmcode/steganographics/secrets@latest
+GOSUMDB=off GOPROXY=https://gitea.cmcode.dev/api/packages/cmcode/go go get -v gitea.cmcode.dev/cmcode/steganographics@v0.1.3
 ```
-
-> *If you do not do this, you will not be able to use the library - Go's built-in package resolver will attempt to use `main.go` and will fail.*
 
 Usage:
 
@@ -65,7 +63,7 @@ func writeTextToImageFromStdin(hiddenText string) {
 If you want to use Go's `go install` to install steganographics, you can do it by appending `-cli` to the version:
 
 ```bash
-GOSUMDB=off GOPROXY=https://gitea.cmcode.dev/api/packages/cmcode/go go install gitea.cmcode.dev/cmcode/steganographics@v0.1.1-cli
+GOSUMDB=off GOPROXY=https://gitea.cmcode.dev/api/packages/cmcode/go go install gitea.cmcode.dev/cmcode/steganographics@v0.1.3-cli
 ```
 
 > *Note: If you forget to add the suffix `-cli`, it will instead install the library-only version.*
@@ -114,6 +112,10 @@ To test the endpoints, you can use an HTTP client like `curl` or a tool like Pos
 - Unit tests are not currently implemented, but the library does work as expected in intended, normal use cases.
 - This library may alter your source image in more ways than simply the LSB algorithm.
 - Compression or other image alterations run the risk of wiping out the embedded image.
+
+## Development notes
+
+This package's publishing mechanism is not part of this repository. It is a simple module packing script written in Go that selectively creates a zip archive for both the `-cli` and non-cli variants of the Go module. I'd like to publish this script at some point in the near future.
 
 ## Appendix
 

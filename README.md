@@ -119,7 +119,7 @@ This package's publishing mechanism is not part of this repository. It is a simp
 
 ## Appendix
 
-This is a useful command using ImageMagick's `covert` command line tool to convert a jpg to png:
+This is a useful command using ImageMagick's `convert` command line tool to convert a jpg to png:
 
 ```bash
 convert -quality 100 -define png:compression-level=9 input.jpg input.png

@@ -19,9 +19,9 @@ var (
 	flagCert    string
 	flagKey     string
 	flagVersion bool
-
-	version string // to be modified at compile time
 )
+
+var version = "dev" // to be modified at compile time
 
 func parseFlags() {
 	flag.StringVar(&flagAddr, "addr", "", "the address (host and port) to listen on, such as 0.0.0.0:29104")

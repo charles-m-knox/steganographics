@@ -1,40 +1,83 @@
-CADDY_CONTAINER=steganographics-caddy
-DOCKER_IMAGE=onlinuxorg-steganographics:latest
-DOCKER_CONTAINER=onlinuxorg-steganographics
+.PHONY=build
 
-prep:
-	cd assets && unxz --force --keep semantic-*.min.css.xz
-	cd assets && unxz --force --keep alpinejs-*.min.js.xz
-	cd assets/fonts && unxz --force --keep *.xz
+BUILDDIR=build
+VER=0.1.0
+BIN=$(BUILDDIR)/steganographics-v$(VER)
+REPO=gitea.cmcode.dev/cmcode/steganographics
 
-build: prep
-	podman build -t $(DOCKER_IMAGE) .
+build-dev:
+	CGO_ENABLED=0 go build -v
+
+mkbuilddir:
+	mkdir -p $(BUILDDIR)
+
+build-prod: mkbuilddir
+	CGO_ENABLED=0 go build -v -o $(BIN) -ldflags="-w -s -buildid=" -trimpath
+
+test:
+	go test -test.v -coverprofile=testcov.out ./... && \
+	go tool cover -html=testcov.out
 
 run:
-	-podman rm -f $(DOCKER_CONTAINER)
-	podman run \
-		-d \
-		-p 8081:8081 \
-		-v $(PWD)/assets:/assets:z \
-		--name $(DOCKER_CONTAINER) \
-		$(DOCKER_IMAGE)
+	./$(BIN)
 
-logs:
-	podman logs -f $(DOCKER_CONTAINER)
+lint:
+	golangci-lint run ./...
 
-build-go:
-	go get -v
-	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o steganographics .
+compress-prod: mkbuilddir
+	rm -f $(BIN)-compressed
+	upx --best -o ./$(BIN)-compressed $(BIN)
 
-run-go-server:
-	./steganographics --server
+build-mac-arm64: mkbuilddir
+	CGO_ENABLED=0 GOARCH=arm64 GOOS=darwin go build -v -o $(BIN)-darwin-arm64 -ldflags="-w -s -buildid=" -trimpath
+	rm -f $(BIN)-darwin-arm64.xz
+	xz -9 -e -T 12 -vv $(BIN)-darwin-arm64
 
-run-caddy:
-	-podman rm -f $(CADDY_CONTAINER)
-	podman run \
-		-p 8081:80 \
-		--restart=unless-stopped -it -d \
-		--name=$(CADDY_CONTAINER) \
-		-v $(PWD)/assets:/usr/share/caddy:z \
-		-v $(PWD)/Caddyfile:/etc/caddy/Caddyfile:z \
-		docker.io/library/caddy:latest
+build-mac-amd64: mkbuilddir
+	CGO_ENABLED=0 GOARCH=amd64 GOOS=darwin go build -v -o $(BIN)-darwin-amd64 -ldflags="-w -s -buildid=" -trimpath
+	rm -f $(BIN)-darwin-amd64.xz
+	xz -9 -e -T 12 -vv $(BIN)-darwin-amd64
+
+build-win-amd64: mkbuilddir
+	CGO_ENABLED=0 GOARCH=amd64 GOOS=windows go build -v -o $(BIN)-win-amd64-uncompressed -ldflags="-w -s -buildid=" -trimpath
+	rm -f $(BIN)-win-amd64
+	upx --best -o ./$(BIN)-win-amd64 $(BIN)-win-amd64-uncompressed
+
+build-linux-arm64: mkbuilddir
+	CGO_ENABLED=0 GOARCH=arm64 GOOS=linux go build -v -o $(BIN)-linux-arm64-uncompressed -ldflags="-w -s -buildid=" -trimpath
+	rm -f $(BIN)-linux-arm64
+	upx --best -o ./$(BIN)-linux-arm64 $(BIN)-linux-arm64-uncompressed
+
+build-linux-amd64: mkbuilddir
+	CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -v -o $(BIN)-linux-amd64-uncompressed -ldflags="-w -s -buildid=" -trimpath
+	rm -f $(BIN)-linux-amd64
+	upx --best -o ./$(BIN)-linux-amd64 $(BIN)-linux-amd64-uncompressed
+
+build-all: mkbuilddir build-linux-amd64 build-linux-arm64 build-win-amd64 build-mac-amd64 build-mac-arm64
+
+delete-builds:
+	rm $(BUILDDIR)/*
+
+gen-tls-certs:
+	openssl genrsa -out key.pem 2048 && \
+	openssl ecparam -genkey -name secp384r1 -out key.pem && \
+	openssl req -new -x509 -sha256 -key key.pem -out cert.pem -days 3650
+
+podman-build:
+	podman build -t $(REPO):latest -f containerfile .
+	podman tag $(REPO):latest $(REPO):v$(VER)
+
+# requires you to run 'podman login gitea.cmcode.dev'
+push-gitea-container-image:
+	podman push $(REPO):latest
+	podman push $(REPO):v$(VER)
+
+podman-run:
+	podman rm -f steganographics || true
+	podman run -d \
+		-p "127.0.0.1:29104:29104" \
+		--restart=unless-stopped \
+		--name=steganographics \
+		-it steganographics:latest \
+			/steganographics -addr 0.0.0.0:29104
+	podman logs -f steganographics

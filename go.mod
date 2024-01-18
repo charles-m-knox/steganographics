@@ -1,3 +1,3 @@
-module steganographics
+module gitea.cmcode.dev/cmcode/steganographics
 
-go 1.20
+go 1.21

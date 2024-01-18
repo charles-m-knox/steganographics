@@ -28,3 +28,10 @@ input.png
 output.png
 assets/alpinejs-*.min.js
 *.old
+
+build/
+old/
+
+*.png
+cert.pem
+key.pem

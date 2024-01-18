@@ -1,22 +1,83 @@
 # steganographics
 
-A tool to enable easy access to steganography.
+A tool to enable easy access to steganography by embedding secret text in PNG images.
+
+It uses a simple Least Significant Bit (LSB) algorithm to distribute the desired secret bytes across the first bytes in the red channel of an image.
 
 ## Usage
 
-This program has two modes of operation - either as a command line tool, or as a standalone HTTP server. If you run it using `make run` below, a Docker container will run both Caddy and the application itself simultaneously, with Caddy doing gzip compression and static file hosting.
+This program has three modes of operation:
+
+- as a Go library
+- command line tool
+- a standalone HTTP server.
+
+### Go library
+
+This Go library has no dependencies aside from the standard library, and will work with `CGO_ENABLED=0`.
+
+```go
+package main
+
+import (
+    s "gitea.cmcode.dev/cmcode/steganographics"
+)
+
+func getTextFromStdin() {
+    img, _, err := image.Decode(os.Stdin)
+    if err != nil {
+        log.Fatalf("failed to read img from stdin: %v", err.Error())
+    }
+
+    os.Stdout.Write(s.ExtractTextFromImage(img))
+}
+
+func writeTextToImageFromStdin(hiddenText string) {
+    img, _, err := image.Decode(os.Stdin)
+    if err != nil {
+        log.Fatalf("failed to read img from stdin: %v", err.Error())
+    }
+
+    output, err := s.HideTextInImage(img, []byte(hiddenText))
+    if err != nil {
+        log.Fatalf("failed to read img from stdin: %v", err.Error())
+    }
+
+    err = png.Encode(os.Stdout, output)
+    if err != nil {
+        log.Fatalf("failed to write img to stdout: %v", err.Error())
+    }
+}
+```
+
+### Command line tool
+
+`steganographics` supports piping from `stdin` and to `stdout`:
 
 ```bash
-make prep
-make build
-make run
+# writes secret text to an image, and then immediately echoes the secret
+# text from it
+cat path/to/image.png | ./steganographics -secret "secret message1" | ./steganographics
+```
 
-./steganographics --help
+It can also directly read and write to/from files:
 
-# the below two are required at the same time
-# caddy serves static files locally
-make run-caddy
-make run-server
+```bash
+# write a message into an image:
+./steganographics -input path/to/image.png -output path/to/output.png -secret "secret message2"
+
+# read a message from an image:
+./steganographics -input path/to/image.png
+```
+
+### HTTP server API
+
+```bash
+./steganographics -addr "0.0.0.0:29104"
+
+# with tls:
+make gen-tls-certs # optional - generates certs and requires interactive input
+./steganographics -addr "0.0.0.0:29104" -cert cert.pem -key key.pem
 ```
 
 When running as an HTTP server, this program provides two REST API endpoints:
@@ -27,9 +88,18 @@ When running as an HTTP server, this program provides two REST API endpoints:
 
 To test the endpoints, you can use an HTTP client like `curl` or a tool like Postman to send POST requests with the appropriate JSON payload to the `/api/hide` and `/api/extract` endpoints.
 
+## Disclaimers and warnings
+
+- This may not be the most secure/private/hardened method of encoding text in an image.
+- This is a side project and may have bugs or other issues.
+- This project is licensed AGPL3 so you cannot use it unless you abide by the license terms.
+- Unit tests are not currently implemented, but the library does work as expected in intended, normal use cases.
+- This library may alter your source image in more ways than simply the LSB algorithm.
+- Compression or other image alterations run the risk of wiping out the embedded image.
+
 ## Appendix
 
-Useful command:
+This is a useful command using ImageMagick's `covert` command line tool to convert a jpg to png:
 
 ```bash
 convert -quality 100 -define png:compression-level=9 input.jpg input.png

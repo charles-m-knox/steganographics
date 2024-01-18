@@ -79,14 +79,14 @@ func HideTextInImageFile(inputFile string, msg []byte, outputFile string) error 
 func loadImage(filename string) (image.Image, string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil, "", fmt.Errorf("failed to open input file %v: %w", inputFile, err)
+		return nil, "", fmt.Errorf("failed to open input file %v: %w", filename, err)
 	}
 
 	defer file.Close()
 
 	img, imgType, err := image.Decode(file)
 	if err != nil {
-		return nil, "", fmt.Errorf("failed to decodoe image from input file %v: %w", inputFile, err)
+		return nil, "", fmt.Errorf("failed to decodoe image from input file %v: %w", filename, err)
 	}
 
 	return img, imgType, nil
@@ -96,13 +96,13 @@ func loadImage(filename string) (image.Image, string, error) {
 func saveImage(filename string, img image.Image) error {
 	file, err := os.Create(filename)
 	if err != nil {
-		return fmt.Errorf("failed to open file for saving image to input file %v: %w", inputFile, err)
+		return fmt.Errorf("failed to open file for saving image to input file %v: %w", filename, err)
 	}
 	defer file.Close()
 
 	err = png.Encode(file, img)
 	if err != nil {
-		return fmt.Errorf("failed to encode image to input file %v: %w", inputFile, err)
+		return fmt.Errorf("failed to encode image to input file %v: %w", filename, err)
 	}
 
 	return nil

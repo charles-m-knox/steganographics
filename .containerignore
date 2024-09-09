@@ -1,6 +1,13 @@
-build/
-old/
-*.png
-steganographics
+/build
+/old
+/steganographics
+
 cert.pem
 key.pem
+
+*.png
+*.jpg
+*.old
+
+.golangci.yml
+.gitignore

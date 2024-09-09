@@ -2,8 +2,10 @@ FROM docker.io/library/golang:alpine AS builder
 
 RUN apk add upx
 
+RUN mkdir -p /site/pkg/steganographics
 WORKDIR /site
 COPY go.mod /site
+COPY pkg/steganographics/go.mod /site/pkg/steganographics/go.mod
 
 RUN go mod download
 
@@ -15,5 +17,7 @@ RUN upx --best -o ./steganographics bin-uncompressed
 
 FROM docker.io/library/alpine:latest
 COPY --from=builder /site/steganographics /steganographics
+
+LABEL org.opencontainers.image.source https://github.com/charles-m-knox/steganographics
 
 CMD ["/steganographics"]

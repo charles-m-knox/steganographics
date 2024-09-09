@@ -68,7 +68,7 @@ podman-build:
 	podman tag $(REPO):latest $(REPO):v$(VER)
 
 # requires you to run 'podman login ghcr.io'
-push-gitea-container-image:
+podman-push:
 	podman push $(REPO):latest
 	podman push $(REPO):v$(VER)
 

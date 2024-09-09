@@ -28,7 +28,7 @@ Usage:
 package main
 
 import (
-    s "github.com/charles-m-knox/steganographics/secrets"
+    s "github.com/charles-m-knox/steganographics/pkg/steganographics"
 )
 
 func getTextFromStdin() {
@@ -122,5 +122,7 @@ This package's publishing mechanism is not part of this repository. It is a simp
 This is a useful command using ImageMagick's `convert` command line tool to convert a jpg to png:
 
 ```bash
+# note: as of imagemagick v7, it might now called "magick" instead of "convert"
+# on your system
 convert -quality 100 -define png:compression-level=9 input.jpg input.png
 ```

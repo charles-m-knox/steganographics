@@ -4,6 +4,7 @@ BUILDDIR=build
 VER=0.1.5
 BIN=$(BUILDDIR)/steganographics-v$(VER)
 REPO=github.com/charles-m-knox/steganographics
+OCI_REPO=ghcr.io/charles-m-knox/steganographics
 
 build-dev:
 	CGO_ENABLED=0 go build -ldflags="-X main.version=v$(VER)-dev" -v
@@ -64,13 +65,13 @@ gen-tls-certs:
 	openssl req -new -x509 -sha256 -key key.pem -out cert.pem -days 3650
 
 podman-build:
-	podman build -t $(REPO):latest -f containerfile .
-	podman tag $(REPO):latest $(REPO):v$(VER)
+	podman build -t $(OCI_REPO):latest -f containerfile .
+	podman tag $(OCI_REPO):latest $(OCI_REPO):v$(VER)
 
 # requires you to run 'podman login ghcr.io'
 podman-push:
-	podman push $(REPO):latest
-	podman push $(REPO):v$(VER)
+	podman push $(OCI_REPO):latest
+	podman push $(OCI_REPO):v$(VER)
 
 podman-run:
 	podman rm -f steganographics || true

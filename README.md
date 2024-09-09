@@ -6,20 +6,18 @@ It uses a simple Least Significant Bit (LSB) algorithm to distribute the desired
 
 ## Usage
 
-This program has three modes of operation:
+This program has three modes of operation - in all three modes, this project has no dependencies, it just uses standard library:
 
-- as a Go library
+- as a Go library that you can import
 - command line tool
-- a standalone HTTP server.
+- a standalone HTTP server
 
 ### Go library
 
 This Go library has no dependencies aside from the standard library, and will work with `CGO_ENABLED=0`.
 
-You **must** install it like this:
-
 ```bash
-go get -v github.com/charles-m-knox/steganographics
+go get -v github.com/charles-m-knox/steganographics/pkg/steganographics
 ```
 
 Usage:
@@ -60,13 +58,11 @@ func writeTextToImageFromStdin(hiddenText string) {
 
 ### Command line tool
 
-If you want to use Go's `go install` to install steganographics, you can do it by appending `-cli` to the version:
+If you want to use Go's `go install` to install steganographics, you can do it by trimming the `pkg/steganographics` suffix from the earlier `go get` command:
 
 ```bash
 go install github.com/charles-m-knox/steganographics
 ```
-
-> *Note: If you forget to add the suffix `-cli`, it will instead install the library-only version.*
 
 Once installed, `steganographics` supports piping from `stdin` and to `stdout`:
 
@@ -112,10 +108,6 @@ To test the endpoints, you can use an HTTP client like `curl` or a tool like Pos
 - Unit tests are not currently implemented, but the library does work as expected in intended, normal use cases.
 - This library may alter your source image in more ways than simply the LSB algorithm.
 - Compression or other image alterations run the risk of wiping out the embedded image.
-
-## Development notes
-
-This package's publishing mechanism is not part of this repository. It is a simple module packing script written in Go that selectively creates a zip archive for both the `-cli` and non-cli variants of the Go module. I'd like to publish this script at some point in the near future.
 
 ## Appendix
 

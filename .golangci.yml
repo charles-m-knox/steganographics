@@ -9,6 +9,7 @@ linters:
     - exhaustruct
     - gomnd # i like the concept but it comes up in too many places (magic numbers)
     - gochecknoglobals
+    - mnd
     # - deadcode
     # - golint
     # - ifshort

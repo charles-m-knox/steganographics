@@ -1,9 +1,9 @@
 .PHONY=build
 
 BUILDDIR=build
-VER=0.1.4
+VER=0.1.5
 BIN=$(BUILDDIR)/steganographics-v$(VER)
-REPO=gitea.cmcode.dev/cmcode/steganographics
+REPO=github.com/charles-m-knox/steganographics
 
 build-dev:
 	CGO_ENABLED=0 go build -ldflags="-X main.version=v$(VER)-dev" -v
@@ -67,7 +67,7 @@ podman-build:
 	podman build -t $(REPO):latest -f containerfile .
 	podman tag $(REPO):latest $(REPO):v$(VER)
 
-# requires you to run 'podman login gitea.cmcode.dev'
+# requires you to run 'podman login ghcr.io'
 push-gitea-container-image:
 	podman push $(REPO):latest
 	podman push $(REPO):v$(VER)

@@ -1,3 +1,3 @@
-module gitea.cmcode.dev/cmcode/steganographics
+module github.com/charles-m-knox/steganographics
 
 go 1.21

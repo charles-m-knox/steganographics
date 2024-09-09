@@ -19,7 +19,7 @@ This Go library has no dependencies aside from the standard library, and will wo
 You **must** install it like this:
 
 ```bash
-GOSUMDB=off GOPROXY=https://gitea.cmcode.dev/api/packages/cmcode/go go get -v gitea.cmcode.dev/cmcode/steganographics@v0.1.4
+go get -v github.com/charles-m-knox/steganographics
 ```
 
 Usage:
@@ -28,7 +28,7 @@ Usage:
 package main
 
 import (
-    s "gitea.cmcode.dev/cmcode/steganographics/secrets"
+    s "github.com/charles-m-knox/steganographics/secrets"
 )
 
 func getTextFromStdin() {
@@ -63,7 +63,7 @@ func writeTextToImageFromStdin(hiddenText string) {
 If you want to use Go's `go install` to install steganographics, you can do it by appending `-cli` to the version:
 
 ```bash
-GOSUMDB=off GOPROXY=https://gitea.cmcode.dev/api/packages/cmcode/go go install gitea.cmcode.dev/cmcode/steganographics@v0.1.4-cli
+go install github.com/charles-m-knox/steganographics
 ```
 
 > *Note: If you forget to add the suffix `-cli`, it will instead install the library-only version.*

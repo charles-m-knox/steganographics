@@ -1,4 +1,4 @@
-package secrets
+package steganographics
 
 import (
 	"bytes"
@@ -86,7 +86,7 @@ func loadImage(filename string) (image.Image, string, error) {
 
 	img, imgType, err := image.Decode(file)
 	if err != nil {
-		return nil, "", fmt.Errorf("failed to decodoe image from input file %v: %w", filename, err)
+		return nil, "", fmt.Errorf("failed to decode image from input file %v: %w", filename, err)
 	}
 
 	return img, imgType, nil

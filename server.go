@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"time"
 
-	"gitea.cmcode.dev/cmcode/steganographics/secrets"
+	steg "github.com/charles-m-knox/steganographics/pkg/steganographics"
 )
 
 type HideRequest struct {
@@ -88,7 +88,7 @@ func hideTextInImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	imgWithText, err := secrets.HideTextInImage(img, []byte(hideReq.Msg))
+	imgWithText, err := steg.HideTextInImage(img, []byte(hideReq.Msg))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 
@@ -152,7 +152,7 @@ func extractTextFromImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := secrets.ExtractTextFromImage(img)
+	data := steg.ExtractTextFromImage(img)
 
 	response := ExtractResponse{
 		Msg: string(data),

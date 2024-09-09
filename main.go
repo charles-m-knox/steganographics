@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	"gitea.cmcode.dev/cmcode/steganographics/secrets"
+	steg "github.com/charles-m-knox/steganographics/pkg/steganographics"
 )
 
 var (
@@ -52,14 +52,14 @@ func main() {
 	if flagAddr != "" {
 		server(flagAddr)
 	} else if inputFile != "" && outputFile != "" && hiddenText != "" {
-		err := secrets.HideTextInImageFile(inputFile, []byte(hiddenText), outputFile)
+		err := steg.HideTextInImageFile(inputFile, []byte(hiddenText), outputFile)
 		if err != nil {
 			log.Printf("Error: %s\n", err)
 		}
 
 		log.Println("successfully hid text in image, exiting now")
 	} else if inputFile != "" && outputFile == "" && hiddenText == "" {
-		extractedText, err := secrets.ExtractTextFromImageFile(inputFile)
+		extractedText, err := steg.ExtractTextFromImageFile(inputFile)
 		if err != nil {
 			log.Printf("failed to extract text from file %v: %v", inputFile, err.Error())
 		}
@@ -71,7 +71,7 @@ func main() {
 			log.Fatalf("failed to read img from stdin: %v", err.Error())
 		}
 
-		output, err := secrets.HideTextInImage(img, []byte(hiddenText))
+		output, err := steg.HideTextInImage(img, []byte(hiddenText))
 		if err != nil {
 			log.Fatalf("failed to read img from stdin: %v", err.Error())
 		}
@@ -86,6 +86,6 @@ func main() {
 			log.Fatalf("failed to read img from stdin: %v", err.Error())
 		}
 
-		os.Stdout.Write(secrets.ExtractTextFromImage(img))
+		os.Stdout.Write(steg.ExtractTextFromImage(img))
 	}
 }
